@@ -19,6 +19,7 @@
       const m = p._embedded && p._embedded['wp:featuredmedia'] && p._embedded['wp:featuredmedia'][0];
       const sizes = m && m.media_details && m.media_details.sizes;
       const imagem = (sizes && sizes.medium && sizes.medium.source_url) || (m && m.source_url) || '';
+      const destino = 'noticia.html?id=' + p.id;
       const data = new Date(p.date).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
       let resumo = texto(p.excerpt && p.excerpt.rendered).replace(/\s*\[…\]|\s*\[\.\.\.\]/g, '');
       if (resumo.length > 180) resumo = resumo.slice(0, 180).replace(/\s+\S*$/, '') + '…';
@@ -29,7 +30,7 @@
       const card = document.createElement('div'); card.className = 'elementor-post__card';
 
       if (imagem) {
-        const a = document.createElement('a'); a.className = 'elementor-post__thumbnail__link'; a.href = p.link; a.tabIndex = -1;
+        const a = document.createElement('a'); a.className = 'elementor-post__thumbnail__link'; a.href = destino; a.tabIndex = -1;
         const t = document.createElement('div'); t.className = 'elementor-post__thumbnail';
         const img = document.createElement('img'); img.src = imagem; img.alt = ''; img.loading = 'lazy';
         t.appendChild(img); a.appendChild(t); card.appendChild(a);
@@ -37,11 +38,11 @@
 
       const corpo = document.createElement('div'); corpo.className = 'elementor-post__text';
       const h3 = document.createElement('h3'); h3.className = 'elementor-post__title';
-      const ta = document.createElement('a'); ta.href = p.link; ta.textContent = texto(p.title && p.title.rendered);
+      const ta = document.createElement('a'); ta.href = destino; ta.textContent = texto(p.title && p.title.rendered);
       h3.appendChild(ta);
       const ex = document.createElement('div'); ex.className = 'elementor-post__excerpt';
       const pp = document.createElement('p'); pp.textContent = resumo; ex.appendChild(pp);
-      const mais = document.createElement('a'); mais.className = 'elementor-post__read-more'; mais.href = p.link; mais.textContent = 'Ler mais »';
+      const mais = document.createElement('a'); mais.className = 'elementor-post__read-more'; mais.href = destino; mais.textContent = 'Ler mais »';
       corpo.append(h3, ex, mais); card.appendChild(corpo);
 
       const meta = document.createElement('div'); meta.className = 'elementor-post__meta-data';
