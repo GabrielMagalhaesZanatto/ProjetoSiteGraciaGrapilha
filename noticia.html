@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Notícias | Gracia & Grapilha Advogados Associados</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--grafite:#23241F;--marinho:#000A28;--terracota:#A85436;--filete:#C9C6BB;--cimento:#F4F2EC}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cimento);color:var(--grafite);font-family:"Archivo",Helvetica,Arial,sans-serif;font-size:16px;line-height:1.65}
+.topo{background:var(--marinho);padding:14px 20px}
+.topo-in{max-width:1000px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.topo img{width:170px;height:auto;display:block}
+.voltar{color:var(--cimento);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase}
+.voltar:hover{text-decoration:underline}
+main{max-width:720px;margin:0 auto;padding:56px 20px 72px}
+.marca{width:48px;height:3px;background:var(--terracota);margin-bottom:20px}
+.etiqueta{display:block;color:var(--marinho);font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px}
+h1{font-size:clamp(28px,5vw,38px);line-height:1.1;font-weight:600;letter-spacing:-.02em;margin:0 0 28px}
+.capa{margin:0 0 32px}.capa img{width:100%;height:auto;display:block;border:1px solid var(--filete)}
+.texto p,.texto li{margin:0 0 1.1em}
+.texto h2,.texto h3,.texto h4{font-weight:600;letter-spacing:-.02em;line-height:1.25;margin:1.6em 0 .6em}
+.texto a{color:var(--marinho);text-decoration:underline}
+.texto img{max-width:100%;height:auto}
+.texto blockquote{margin:1.4em 0;padding-left:18px;border-left:2px solid var(--filete)}
+.texto table{border-collapse:collapse;width:100%;display:block;overflow-x:auto}
+.texto td,.texto th{border:1px solid var(--filete);padding:8px 10px}
+.fonte{margin-top:40px;padding-top:20px;border-top:1px solid var(--filete);color:var(--marinho);font-size:14px}
+.fonte a{color:var(--marinho)}
+.rodape{background:var(--marinho);color:var(--cimento);padding:48px 20px;text-align:center;font-size:15px}
+.rodape img{width:200px;height:auto;display:block;margin:0 auto 24px}
+.rodape p{margin:6px 0}.rodape a{color:var(--cimento);text-decoration:none}
+</style>
+</head>
+<body>
+<header class="topo"><div class="topo-in">
+  <a href="index.html"><img src="Logo_Nova.png" width="500" height="271" alt="Gracia & Grapilha Advogados Associados"></a>
+  <a class="voltar" href="index.html#blog">← Todas as notícias</a>
+</div></header>
+
+<main>
+  <div class="marca"></div>
+  <span class="etiqueta" id="data">Notícias</span>
+  <h1 id="titulo">Carregando…</h1>
+  <div id="capa"></div>
+  <article class="texto" id="texto"></article>
+  <p class="fonte" id="fonte" hidden></p>
+</main>
+
+<footer class="rodape">
+  <img src="Logo_Nova.png" width="500" height="271" alt="Gracia & Grapilha Advogados Associados">
+  <p><a href="mailto:contato@graciagrapilha.com.br">contato@graciagrapilha.com.br</a></p>
+  <p>15 3342 3764 – 15 99142 8882</p>
+  <p>Edifício West Point - Rua Horacio Cenci, nº 09, Sala 204 - Parque Campolim, Sorocaba - SP, 18047-800</p>
+</footer>
+
+<script>
+(async () => {
+  const SITE = 'https://graciagrapilha.com.br';
+  const id = new URLSearchParams(location.search).get('id');
+  const $ = (s) => document.getElementById(s);
+  const texto = (h) => new DOMParser().parseFromString(h || '', 'text/html').body.textContent.trim();
+  const falha = () => {
+    $('titulo').textContent = 'Não foi possível carregar esta notícia';
+    $('texto').innerHTML = '<p>Tente novamente em instantes ou acesse o <a href="' + SITE + '">site original</a>.</p>';
+  };
+  if (!/^\d+$/.test(id || '')) return falha();
+
+  // Limpeza do HTML vindo da API: remove scripts/iframes/formulários e todo atributo que não seja link ou imagem
+  const BLOQUEADOS = new Set(['SCRIPT','STYLE','IFRAME','OBJECT','EMBED','FORM','INPUT','BUTTON','SELECT','TEXTAREA','SVG','NOSCRIPT','LINK','META']);
+  const limpar = (no) => {
+    [...no.children].forEach((el) => {
+      if (BLOQUEADOS.has(el.tagName.toUpperCase())) return el.remove();
+      [...el.attributes].forEach((a) => {
+        const n = a.name.toLowerCase();
+        if (!((el.tagName === 'A' && n === 'href') || (el.tagName === 'IMG' && (n === 'src' || n === 'alt')))) el.removeAttribute(a.name);
+      });
+      if (el.tagName === 'A') {
+        const h = el.getAttribute('href') || '';
+        if (/^(https?:|mailto:)/i.test(h)) { el.target = '_blank'; el.rel = 'noopener noreferrer'; } else el.removeAttribute('href');
+      }
+      if (el.tagName === 'IMG') {
+        if (!/^https?:/i.test(el.getAttribute('src') || '')) return el.remove();
+        el.loading = 'lazy';
+      }
+      limpar(el);
+    });
+  };
+
+  try {
+    const r = await fetch(SITE + '/wp-json/wp/v2/posts/' + id + '?_embed=wp:featuredmedia');
+    if (!r.ok) throw new Error(r.status);
+    const p = await r.json();
+    const titulo = texto(p.title && p.title.rendered);
+    document.title = titulo + ' | Gracia & Grapilha';
+    $('titulo').textContent = titulo;
+    $('data').textContent = 'Notícias · ' + new Date(p.date).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    const m = p._embedded && p._embedded['wp:featuredmedia'] && p._embedded['wp:featuredmedia'][0];
+    if (m && m.source_url) {
+      const f = document.createElement('figure'); f.className = 'capa';
+      const img = document.createElement('img'); img.src = m.source_url; img.alt = '';
+      f.appendChild(img); $('capa').appendChild(f);
+    }
+
+    const doc = new DOMParser().parseFromString('<div>' + (p.content && p.content.rendered || '') + '</div>', 'text/html');
+    const raiz = doc.body.firstElementChild;
+    limpar(raiz);
+    $('texto').innerHTML = raiz.innerHTML;
+
+    const f = $('fonte'); f.hidden = false;
+    f.append('Publicado originalmente em ');
+    const a = document.createElement('a'); a.href = p.link; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = 'graciagrapilha.com.br';
+    f.append(a, '.');
+  } catch (e) {
+    console.warn(e); falha();
+  }
+})();
+</script>
+</body>
+</html>
