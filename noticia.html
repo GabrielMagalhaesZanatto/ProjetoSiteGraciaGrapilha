@@ -28,8 +28,6 @@ h1{font-size:clamp(28px,5vw,38px);line-height:1.1;font-weight:600;letter-spacing
 .texto blockquote{margin:1.4em 0;padding-left:18px;border-left:2px solid var(--filete)}
 .texto table{border-collapse:collapse;width:100%;display:block;overflow-x:auto}
 .texto td,.texto th{border:1px solid var(--filete);padding:8px 10px}
-.fonte{margin-top:40px;padding-top:20px;border-top:1px solid var(--filete);color:var(--marinho);font-size:14px}
-.fonte a{color:var(--marinho)}
 .rodape{background:var(--marinho);color:var(--cimento);padding:48px 20px;text-align:center;font-size:15px}
 .rodape img{width:200px;height:auto;display:block;margin:0 auto 24px}
 .rodape p{margin:6px 0}.rodape a{color:var(--cimento);text-decoration:none}
@@ -47,7 +45,6 @@ h1{font-size:clamp(28px,5vw,38px);line-height:1.1;font-weight:600;letter-spacing
   <h1 id="titulo">Carregando…</h1>
   <div id="capa"></div>
   <article class="texto" id="texto"></article>
-  <p class="fonte" id="fonte" hidden></p>
 </main>
 
 <footer class="rodape">
@@ -65,7 +62,7 @@ h1{font-size:clamp(28px,5vw,38px);line-height:1.1;font-weight:600;letter-spacing
   const texto = (h) => new DOMParser().parseFromString(h || '', 'text/html').body.textContent.trim();
   const falha = () => {
     $('titulo').textContent = 'Não foi possível carregar esta notícia';
-    $('texto').innerHTML = '<p>Tente novamente em instantes ou acesse o <a href="' + SITE + '">site original</a>.</p>';
+    $('texto').innerHTML = '<p>Tente novamente em instantes ou <a href="index.html#blog">volte para as notícias</a>.</p>';
   };
   if (!/^\d+$/.test(id || '')) return falha();
 
@@ -111,10 +108,6 @@ h1{font-size:clamp(28px,5vw,38px);line-height:1.1;font-weight:600;letter-spacing
     limpar(raiz);
     $('texto').innerHTML = raiz.innerHTML;
 
-    const f = $('fonte'); f.hidden = false;
-    f.append('Publicado originalmente em ');
-    const a = document.createElement('a'); a.href = p.link; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = 'graciagrapilha.com.br';
-    f.append(a, '.');
   } catch (e) {
     console.warn(e); falha();
   }
