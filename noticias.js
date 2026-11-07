@@ -18,7 +18,7 @@
     posts.forEach((p) => {
       const m = p._embedded && p._embedded['wp:featuredmedia'] && p._embedded['wp:featuredmedia'][0];
       const sizes = m && m.media_details && m.media_details.sizes;
-      const imagem = (sizes && sizes.medium && sizes.medium.source_url) || (m && m.source_url) || '';
+      const imagem = (sizes && ((sizes.medium_large && sizes.medium_large.source_url) || (sizes.large && sizes.large.source_url))) || (m && m.source_url) || '';
       const destino = 'noticia.html?id=' + p.id;
       const data = new Date(p.date).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
       let resumo = texto(p.excerpt && p.excerpt.rendered).replace(/\s*\[…\]|\s*\[\.\.\.\]/g, '');
@@ -32,7 +32,7 @@
       if (imagem) {
         const a = document.createElement('a'); a.className = 'elementor-post__thumbnail__link'; a.href = destino; a.tabIndex = -1;
         const t = document.createElement('div'); t.className = 'elementor-post__thumbnail';
-        const img = document.createElement('img'); img.src = imagem; img.alt = ''; img.loading = 'lazy';
+        const img = document.createElement('img'); img.src = imagem; img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
         t.appendChild(img); a.appendChild(t); card.appendChild(a);
       }
 
